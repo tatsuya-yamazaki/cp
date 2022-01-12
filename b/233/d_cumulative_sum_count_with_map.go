@@ -26,12 +26,10 @@ func main() {
 	}
 
 	ans := 0
-	for l:=1; l<len(a); l++ {
-		for r:=l; r<len(a); r++ {
-			if a[r] - a[l-1] == k {
-				ans++
-			}
-		}
+	m := make(map[int]int)
+	for r:=1; r<len(a); r++ {
+		m[a[r-1]]++
+		ans += m[a[r]-k]
 	}
 	fmt.Println(ans)
 }

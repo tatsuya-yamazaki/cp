@@ -31,26 +31,28 @@ func main() {
 	}
 
 	var stack [][]int
-	for i:=0; i<n; i++ {
+	ans := 0
+	for _, ai := range a[0] {
+		s := []int{1, ai}
+		stack = append(stack, s)
 	}
-
-	fmt.Println(dfs(a, x, 0, 1))
-}
-
-func dfs(bags [][]int, x, n, productOfSequences int) int {
-	if len(bags) == n {
-		if productOfSequences == x {
-			return 1
-		} else {
-			return 0
-		}
-	}
-	ret := 0
-	for _, v := range bags[n] {
-		if productOfSequences > x / v {
+	for len(stack) != 0 {
+		task := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		if task[0] == n {
+			if task[1] == x {
+				ans++
+			}
 			continue
 		}
-		ret += dfs(bags, x, n+1, productOfSequences * v)
+		for _, ai := range a[task[0]] {
+			if ai > x / task[1] {
+				continue
+			}
+			s := []int{task[0]+1, task[1]*ai}
+			stack = append(stack, s)
+		}
 	}
-	return ret
+
+	fmt.Println(ans)
 }
