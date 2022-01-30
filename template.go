@@ -1,25 +1,29 @@
 package main
 
 import(
+	"bufio"
 	"fmt"
 	"os"
-	"bufio"
 	"strconv"
 )
 
 func main() {
+	defer iou.Fl()
+
 	n := iou.I()
 	a := iou.Is(n)
 
-	fmt.Println(a)
+	iou.Pl(a)
 }
 
 type IOUtil struct {
 	Scanner *bufio.Scanner
+	Writer *bufio.Writer
 }
 func NewIOUtil() *IOUtil {
 	iou := IOUtil{
 		Scanner: bufio.NewScanner(os.Stdin),
+		Writer: bufio.NewWriter(os.Stdout),
 	}
 	iou.Scanner.Split(bufio.ScanWords)
 	return &iou
@@ -42,11 +46,44 @@ func (iou *IOUtil) I() int {
 func (iou *IOUtil) S() string {
 	return iou.Str()
 }
-func (iou *IOUtil) Is(n int) []int {
+func (iou *IOUtil) Ints(n int) []int {
 	ret := make([]int, n)
 	for i:=0; i<n; i++ {
 		ret[i] = iou.Int()
 	}
 	return ret
+}
+func (iou *IOUtil) Is(n int) []int {
+	return iou.Ints(n)
+}
+func (iou *IOUtil) CumulativeSum(n int) (cumulative, ints []int) {
+	cumulative = append(cumulative, 0)
+	for i:=0; i<n; i++ {
+		ai := iou.Int()
+		cumulative = append(cumulative, cumulative[i] + ai)
+		ints = append(ints, ai)
+	}
+	return
+}
+func (iou *IOUtil) Cms(n int) (cumulative, ints []int) {
+	return iou.CumulativeSum(n)
+}
+func (iou *IOUtil) Print(a ...interface{}) {
+	fmt.Fprint(iou.Writer, a...)
+}
+func (iou *IOUtil) P(a ...interface{}) {
+	iou.Print(a...)
+}
+func (iou *IOUtil) Println(a ...interface{}) {
+	fmt.Fprintln(iou.Writer, a...)
+}
+func (iou *IOUtil) Pl(a ...interface{}) {
+	iou.Println(a...)
+}
+func (iou *IOUtil) Flush() {
+	iou.Writer.Flush()
+}
+func (iou *IOUtil) Fl() {
+	iou.Flush()
 }
 var iou = NewIOUtil()
