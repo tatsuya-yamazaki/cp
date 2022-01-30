@@ -11,14 +11,14 @@ func main() {
 	fmt.Scan(&n)
 	fmt.Scan(&s)
 	runes := []rune(s)
-	alf := make([][]int, 26)
+	alp := make([][]int, 26)
 	for i, v := range runes {
-		alf[v-'a'] = append(alf[v-'a'], i)
+		alp[v-'a'] = append(alp[v-'a'], i)
 	}
 
 	l, r := 0, len(s)-1
 	for l < r {
-		for i, pos := range alf {
+		for i, pos := range alp {
 			if i >= int(runes[l]-'a') {
 				break
 			}
@@ -38,7 +38,7 @@ func main() {
 			if l < target && target <= r {
 				runes[l], runes[target] = runes[target], runes[l]
 				r = target - 1
-				alf[i] = alf[i][:targetPos]
+				alp[i] = alp[i][:targetPos]
 				break
 			}
 		}
