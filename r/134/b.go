@@ -2,7 +2,6 @@ package main
 
 import(
 	"fmt"
-	"sort"
 )
 
 func main() {
@@ -11,14 +10,30 @@ func main() {
 
 	fmt.Scan(&n)
 	fmt.Scan(&s)
-	r := make([]int, len(s))
-	for i, v := range s {
-		r[i] = int(v)
+	runes := []rune(s)
+
+	l, r := 0, len(s)-1
+	for l < r {
+		nr := r
+		target := -1
+		for l < nr {
+			if runes[l] > runes[nr] && (target == -1 || runes[nr] < runes[target]) {
+				target = nr
+			}
+			nr--
+		}
+
+		if target > -1 {
+			runes[l], runes[target] = runes[target], runes[l]
+			r = target
+		}
+
+		l++
+	}
+	ans := ""
+	for _, v := range runes {
+		ans += string(v)
 	}
 
-	sort.Slice(r, func(i, j int) bool { return true }) //reverse
-
-	dp := make([]int, len(s))
-
-	sort.Slice(r, func(i, j int) bool { return true }) //reverse
+	fmt.Println(ans)
 }
