@@ -1,12 +1,17 @@
 package main
 
 import(
+	"fmt"
 	"os"
 	"bufio"
 	"strconv"
 )
 
 func main() {
+	n := iou.I()
+	a := iou.Is(n)
+
+	fmt.Println(a)
 }
 
 type IOUtil struct {
@@ -40,7 +45,7 @@ func (iou *IOUtil) S() string {
 func (iou *IOUtil) Is(n int) []int {
 	ret := make([]int, n)
 	for i:=0; i<n; i++ {
-		ret[i] = Int()
+		ret[i] = iou.Int()
 	}
 	return ret
 }
