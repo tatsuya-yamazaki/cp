@@ -71,6 +71,18 @@ func (iou *IOUtil) Ints(n int) []int {
 func (iou *IOUtil) Is(n int) []int {
 	return iou.Ints(n)
 }
+func (iou *IOUtil) Ints2(n int) (a, b []int) {
+        a = make([]int, n)
+        b = make([]int, n)
+        for i:=0; i<n; i++ {
+                a[i] = iou.I()
+                b[i] = iou.I()
+        }
+	return a, b
+}
+func (iou *IOUtil) Is2(n int) (a, b []int) {
+	return iou.Ints2(n)
+}
 func (iou *IOUtil) CumulativeSum(n int) (cumulative, ints []int) {
 	cumulative = append(cumulative, 0)
 	for i:=0; i<n; i++ {
