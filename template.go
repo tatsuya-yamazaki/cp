@@ -3,6 +3,7 @@ package main
 import(
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 )
@@ -18,6 +19,7 @@ func main() {
 
 type IOUtil struct {
 	Scanner *bufio.Scanner
+	Reader *bufio.Reader
 	Writer *bufio.Writer
 }
 func NewIOUtil() *IOUtil {
@@ -26,6 +28,7 @@ func NewIOUtil() *IOUtil {
 		Writer: bufio.NewWriter(os.Stdout),
 	}
 	iou.Scanner.Split(bufio.ScanWords)
+	iou.Scanner.Buffer(make([]byte, 1024), math.MaxInt64)
 	return &iou
 }
 func (*IOUtil) ToInt(s string) int {
