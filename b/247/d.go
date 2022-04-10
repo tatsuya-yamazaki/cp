@@ -12,43 +12,9 @@ func main() {
 	defer iou.Fl()
 
 	n := iou.I()
-	x := iou.I()
-	s := iou.S()
+	a := iou.Is(n)
 
-	r := []rune(s)
-	var lrn int
-	var lrpos []int
-	for i:=0; i<n; i++ {
-		switch r[i] {
-		case 'U':
-			if lrn == 0 {
-				continue
-			}
-
-			r[i] = ' '
-			last := len(lrpos) - 1
-			r[lrpos[last]] = ' '
-			lrpos = lrpos[0:last]
-			lrn--
-
-		case 'L', 'R':
-			lrpos = append(lrpos, i)
-			lrn++
-		}
-	}
-
-	for _, v := range r {
-		switch v {
-		case 'U':
-			x /= 2
-		case 'L':
-			x *= 2
-		case 'R':
-			x = x * 2 + 1
-		}
-	}
-
-	iou.Pl(x)
+	iou.Pl(a)
 }
 
 func Max(a, b int) int {
