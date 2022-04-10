@@ -19,35 +19,79 @@ func main() {
 	x := iou.I()
 	u, v := iou.Is2(m)
 
-	am := make([][]bool, n)
-	for i:=0; i<n; i++ {
-		amr := make([]bool, n)
-		am[i] = amr
-	}
+	r := make(map[int][]int)
+	var dp [2001][2001][2]*ModInt
 
 	for i:=0; i<m; i++ {
 		ui, vi := u[i], v[i]
-		ui--
-		vi--
-		am[ui][vi] = true
-		am[vi][ui] = true
+
+		r[ui] = append(r[ui], vi)
+		r[vi] = append(r[vi], ui)
 	}
 
-	// 2000**3だから、TLEのはず。
-	dp := make([]int, n)
-	dp[s-1] = 1
+	d := 998244353
+	dp[0][s][0] = NewModInt(d)
+	dp[0][s][0].Add(1)
+
 	for i:=0; i<k; i++ {
-		dptmp := make([]int, n)
-		for j:=0; j<n; j++ {
-			for l, v := range am[j] {
-				if v {
+		for j:=1; j<=n; j++ {
+			for _, v := range r[j] {
+				if dp[i][j][0] == nil {
+					dp[i][j][0] = NewModInt(d)
+				}
+				if dp[i][j][1] == nil {
+					dp[i][j][1] = NewModInt(d)
+				}
+				if dp[i+1][v][0] == nil {
+					dp[i+1][v][0] = NewModInt(d)
+				}
+				if dp[i+1][v][1] == nil {
+					dp[i+1][v][1] = NewModInt(d)
+				}
+
+				if v == x {
+					dp[i+1][v][0].Add(dp[i][j][1].Get())
+					dp[i+1][v][1].Add(dp[i][j][0].Get())
+				} else {
+					dp[i+1][v][0].Add(dp[i][j][0].Get())
+					dp[i+1][v][1].Add(dp[i][j][1].Get())
 				}
 			}
 		}
-		dp = dptmp
 	}
 
-	iou.Pl(dp[t-1])
+	if dp[k][t][0] == nil {
+		iou.Pl(0)
+	} else {
+		iou.Pl(dp[k][t][0].Get())
+	}
+}
+
+type ModInt struct {
+	mod, value int
+}
+
+func NewModInt(mod int) *ModInt {
+	return &ModInt{mod: mod}
+}
+
+func (m *ModInt) Get() int {
+	return m.value
+}
+
+func (m *ModInt) Add(x int) {
+	m.value = (m.value + x % m.mod) % m.mod
+}
+
+func (m *ModInt) Mul(x int) {
+	m.value = (m.value * (x % m.mod)) % m.mod
+}
+
+func (m *ModInt) Sub(x int) {
+	m.value = m.value - x % m.mod
+	if m.value < 0 {
+		m.value += m.mod
+	}
 }
 
 func Max(a, b int) int {
