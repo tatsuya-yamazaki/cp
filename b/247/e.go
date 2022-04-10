@@ -12,9 +12,35 @@ func main() {
 	defer iou.Fl()
 
 	n := iou.I()
+	x := iou.I()
+	y := iou.I()
 	a := iou.Is(n)
 
 	iou.Pl(a)
+}
+
+type RangeMaximumQuery struct {
+	s []int
+	start int
+}
+
+func NewRangeMaximumQuery(seq []int) *RangeMaximumQuery {
+	n := len(seq)
+	t := 1
+	for t < n {
+		t *= 2
+	}
+	ret := &RangeMaximumQuery{}
+	ret.s := make([]int, t * 2 - 1)
+	ret.start = t - 1
+	for i, v := range seq {
+		ret.Set(ret.start + i, v)
+	}
+	return ret
+}
+
+func (r *RangeMaximumQuery) Set(i, v int) {
+	r.s[r.start + i] = v
 }
 
 func Max(a, b int) int {

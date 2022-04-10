@@ -11,10 +11,28 @@ import(
 func main() {
 	defer iou.Fl()
 
-	n := iou.I()
-	a := iou.Is(n)
+	r := []rune(iou.S())
+	iou.P("0")
 
-	iou.Pl(a)
+	if r[0] == '1' {
+		iou.P("1")
+	} else {
+		iou.P("0")
+	}
+
+	if r[1] == '1' {
+		iou.P("1")
+	} else {
+		iou.P("0")
+	}
+
+	if r[2] == '1' {
+		iou.P("1")
+	} else {
+		iou.P("0")
+	}
+
+	iou.Pl()
 }
 
 func Max(a, b int) int {

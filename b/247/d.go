@@ -11,10 +11,118 @@ import(
 func main() {
 	defer iou.Fl()
 
-	n := iou.I()
-	a := iou.Is(n)
+	d := NewDeque()
+	q := iou.I()
+	for i:=0; i<q; i++ {
+		a := iou.I()
+		switch a {
+		case 1:
+			x := iou.I()
+			c := iou.I()
 
-	iou.Pl(a)
+			if d.Next() {
+				t := d.PopLeft()
+				if t.v == x {
+					t.n += c
+					d.PushRight(t)
+				} else {
+					d.PushLeft(t)
+					d.PushRight(Value{x, c})
+				}
+			} else {
+				d.PushRight(Value{x, c})
+			}
+		case 2:
+			c := iou.I()
+			ans := 0
+			for c > 0 {
+				t := d.PopLeft()
+				if c < t.n {
+					ans += t.v * c
+					t.n -= c
+					d.PushLeft(t)
+					break
+				} else if c == t.n {
+					ans += t.v * c
+					break
+				} else {
+					ans += t.v * t.n
+					c -= t.n
+				}
+			}
+			iou.Pl(ans)
+		}
+	}
+
+}
+
+type Deque struct {
+        begin *LinkedList
+        end *LinkedList
+}
+
+func NewDeque() *Deque {
+        return &Deque{}
+}
+
+func (d *Deque) Next() bool {
+        if d.begin == nil {
+                return false
+        }
+        return true
+}
+
+func (d *Deque) PushLeft(value Value) {
+        ll := &LinkedList{nil, d.begin, value}
+        if d.begin == nil {
+                d.end = ll
+        } else {
+                d.begin.prev = ll
+        }
+        d.begin = ll
+}
+
+func (d *Deque) PushRight(value Value) {
+        ll := &LinkedList{d.end, nil, value}
+        if d.end == nil {
+                d.begin = ll
+        } else {
+                d.end.next = ll
+        }
+        d.end = ll
+}
+
+func (d *Deque) PopLeft() Value {
+        value := d.begin.value
+        if d.begin == d.end {
+                d.begin = nil
+                d.end = nil
+        } else {
+                d.begin.next.prev = nil
+                d.begin = d.begin.next
+        }
+        return value
+}
+
+func (d *Deque) PopRight() Value {
+        value := d.end.value
+        if d.begin == d.end {
+                d.begin = nil
+                d.end = nil
+        } else {
+                d.end.prev.next = nil
+                d.end = d.end.prev
+        }
+        return value
+}
+
+type LinkedList struct {
+        prev, next *LinkedList
+        value Value
+}
+
+type Value struct {
+	v, n int
 }
 
 func Max(a, b int) int {

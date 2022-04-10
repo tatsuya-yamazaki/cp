@@ -14,15 +14,31 @@ func main() {
 	s := iou.S()
 	q := iou.I()
 
+	r := []rune(s)
 	for i:=0; i<q; i++ {
 		t := iou.I()
 		k := iou.I()
-		f(s,t,k)
+		iou.Pl(string(f(r, t, k-1)))
 	}
 
 }
 
-func f(s string, t, k int) {
+func f(r []rune, t, k int) rune {
+	if t == 0 {
+		return r[k]
+	}
+	if k == 0 {
+		return g(r[0], t)
+	}
+	return g(f(r, t-1, k/2), k%2+1)
+}
+
+func g(c rune, n int) rune {
+	c += rune(n % 3)
+	if c > 'C' {
+		c -= 3
+	}
+	return c
 }
 
 

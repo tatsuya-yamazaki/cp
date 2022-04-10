@@ -12,9 +12,31 @@ func main() {
 	defer iou.Fl()
 
 	n := iou.I()
-	a := iou.Is(n)
+	var s, t []string
 
-	iou.Pl(a)
+	m := make(map[string]int)
+
+	for i:=0; i<n; i++ {
+		s = append(s, iou.S())
+		t = append(t, iou.S())
+		si, ti := s[i], t[i]
+		if si != ti {
+			m[si]++
+			m[ti]++
+		} else {
+			m[si]++
+		}
+	}
+
+	for i:=0; i<n; i++ {
+		si, ti := s[i], t[i]
+		if m[si] > 1 && m[ti] > 1 {
+			iou.Pl("No")
+			return
+		}
+	}
+
+	iou.Pl("Yes")
 }
 
 func Max(a, b int) int {

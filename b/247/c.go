@@ -12,9 +12,30 @@ func main() {
 	defer iou.Fl()
 
 	n := iou.I()
-	a := iou.Is(n)
 
-	iou.Pl(a)
+	tmp := make([]int, 0)
+	f(tmp, 1, n)
+
+}
+
+func f(prev []int, i, n int) {
+	ns := make([]int, 0)
+	ns = append(ns, prev...)
+	ns = append(ns, i)
+	ns = append(ns, prev...)
+	if i == n {
+		for j:=0; j<len(ns); j++ {
+			iou.P(ns[j])
+			if j == len(ns) - 1 {
+				iou.Pl()
+			} else {
+				iou.P(" ")
+			}
+		}
+		return
+	}
+	i++
+	f(ns, i, n)
 }
 
 func Max(a, b int) int {
