@@ -16,31 +16,54 @@ func main() {
 	y := iou.I()
 	a := iou.Is(n)
 
-	iou.Pl(a)
-}
-
-type RangeMaximumQuery struct {
-	s []int
-	start int
-}
-
-func NewRangeMaximumQuery(seq []int) *RangeMaximumQuery {
-	n := len(seq)
-	t := 1
-	for t < n {
-		t *= 2
+	ss := make([][]int, 0)
+	s := make([]int, 0)
+	for _, v := range a {
+		if v < y || x < v {
+			if len(s) > 0 {
+				ss = append(ss, s)
+			}
+			s = make([]int, 0)
+		} else {
+			s = append(s, v)
+		}
 	}
-	ret := &RangeMaximumQuery{}
-	ret.s := make([]int, t * 2 - 1)
-	ret.start = t - 1
-	for i, v := range seq {
-		ret.Set(ret.start + i, v)
+	if len(s) > 0 {
+		ss = append(ss, s)
+	}
+
+	var ans int
+	for _, s = range ss {
+		ans += count(s, x, y)
+	}
+
+	iou.Pl(ans)
+}
+
+func count(a []int, x, y int) int {
+	ret := 0
+	l := 0
+	xn, yn := 0, 0
+	for r:=0; r<len(a); r++ {
+		if a[r] == x {
+			xn++
+		}
+		if a[r] == y {
+			yn++
+		}
+
+		for xn >= 1 && yn >= 1 {
+			ret += len(a) - r
+			if a[l] == x {
+				xn--
+			}
+			if a[l] == y {
+				yn--
+			}
+			l++
+		}
 	}
 	return ret
-}
-
-func (r *RangeMaximumQuery) Set(i, v int) {
-	r.s[r.start + i] = v
 }
 
 func Max(a, b int) int {
