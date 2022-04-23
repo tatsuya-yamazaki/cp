@@ -12,35 +12,59 @@ func main() {
 	defer iou.Fl()
 
 	n := iou.I()
-	a := make([]int, n)
-	m := make(map[int][]int)
-	for i:=0; i<n; i++ {
-		ai := iou.I()
-		a[i] = ai
-		m[ai] = append(m[ai], i)
+	m := iou.I()
+	k := iou.I()
+
+	var dp [51][2501]*ModInt
+
+	mod := 998244353
+	for i:=0; i<=k; i++ {
+		dp[0][i] = NewModInt(mod)
+	}
+	dp[0][k].Add(1)
+
+	for i:=1; i<=n; i++ {
+		for j:=0; j<=k; j++ {
+			dp[i][j] = NewModInt(mod)
+			if j != 0 {
+				dp[i][j].Add(dp[i][j-1].Get())
+			}
+			dp[i][j].Add(dp[i-1][Min(k, j+m)].Get())
+			dp[i][j].Sub(dp[i-1][j].Get())
+		}
 	}
 
-	q := iou.I()
-	for i:=0; i<q; i++ {
-		l := iou.I()
-		r := iou.I()
-		x := iou.I()
-		iou.Pl(LowerBound(m[x], r) - LowerBound(m[x], l-1))
-	}
+	iou.Pl(dp[n][k].Get())
 }
 
-func LowerBound(s []int, value int) int {
-        l, r := 0, len(s)
-        for l != r {
-                m := (l + r) / 2
-                if value > s[m] {
-                        l = m + 1
-                } else {
-                        r = m
-                }
+type ModInt struct {
+        mod, value int
+}
+
+func NewModInt(mod int) *ModInt {
+        return &ModInt{mod: mod}
+}
+
+func (m *ModInt) Get() int {
+        return m.value
+}
+
+func (m *ModInt) Add(x int) {
+        m.value = (m.value + x % m.mod) % m.mod
+}
+
+func (m *ModInt) Mul(x int) {
+        m.value = (m.value * (x % m.mod)) % m.mod
+}
+
+func (m *ModInt) Sub(x int) {
+        m.value = m.value - x % m.mod
+        if m.value < 0 {
+                m.value += m.mod
         }
-        return l
 }
+
+
 
 func Max(a, b int) int {
 	if a < b {
