@@ -11,25 +11,31 @@ import(
 func main() {
 	defer iou.Fl()
 
-	n := iou.I()
-	a := iou.Is(n)
+	a := iou.I()
+	b := iou.I()
+	c := iou.I()
+	d := iou.I()
+	e := iou.I()
+	f := iou.I()
+	x := iou.I()
 
-	m := make(map[int]int)
-	max := 0
-	for _, v := range a {
-		m[v]++
-		max = Max(max, v)
-	}
-
-	ans := 0
-
-	for q:=1; q <= max; q++ {
-		for r:=1; q * r <= max; r++ {
-			ans += m[q] * m[r] * m[q*r]
+	ta, ao := 0, 0
+	for i:=0; i<x; i++ {
+		if i % (a+c) < a {
+			ta += b
+		}
+		if i % (d+f) < d {
+			ao += e
 		}
 	}
 
-	iou.Pl(ans)
+	if ta == ao {
+		iou.Pl("Draw")
+	} else if ta > ao {
+		iou.Pl("Takahashi")
+	} else {
+		iou.Pl("Aoki")
+	}
 }
 
 func Max(a, b int) int {
