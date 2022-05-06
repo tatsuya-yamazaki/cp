@@ -72,12 +72,12 @@ func (iou *IOUtil) Is(n int) []int {
 	return iou.Ints(n)
 }
 func (iou *IOUtil) Ints2(n int) (a, b []int) {
-        a = make([]int, n)
-        b = make([]int, n)
-        for i:=0; i<n; i++ {
-                a[i] = iou.I()
-                b[i] = iou.I()
-        }
+	a = make([]int, n)
+	b = make([]int, n)
+	for i:=0; i<n; i++ {
+		a[i] = iou.I()
+		b[i] = iou.I()
+	}
 	return a, b
 }
 func (iou *IOUtil) Is2(n int) (a, b []int) {
@@ -106,6 +106,29 @@ func (iou *IOUtil) Println(a ...interface{}) {
 }
 func (iou *IOUtil) Pl(a ...interface{}) {
 	iou.Println(a...)
+}
+func (iou *IOUtil) PrintIntSlice(s []int) {
+	for _, v := range s {
+		fmt.Fprint(iou.Writer, v)
+	}
+	fmt.Fprintln(iou.Writer)
+}
+func (iou *IOUtil) Pis(s []int) {
+	iou.PrintIntSlice(s)
+}
+func (iou *IOUtil) PrintIntSliceSpace(s []int) {
+	last := len(s) - 1
+	for i, v := range s {
+		fmt.Fprint(iou.Writer, v)
+		if i == last {
+			fmt.Fprintln(iou.Writer)
+		} else {
+			fmt.Fprint(iou.Writer, " ")
+		}
+	}
+}
+func (iou *IOUtil) Piss(s []int) {
+	iou.PrintIntSliceSpace(s)
 }
 func (iou *IOUtil) Flush() {
 	iou.Writer.Flush()
