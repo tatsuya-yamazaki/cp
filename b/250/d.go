@@ -50,15 +50,13 @@ func main() {
 
 		for r - l > 1 {
 			m := (l + r) / 2
-			if vvv * pt[m] > n {
+			if float64(vvv) * float64(pt[m]) > float64(n) {
 				r = m
 			} else {
 				l = m
 			}
 		}
 
-		if l == i {
-		}
 		a += l + 1
 	}
 
