@@ -9,12 +9,12 @@ import(
 )
 
 func main() {
-	defer iou.Fl()
+	defer iou.fl()
 
-	n := iou.I()
-	a := iou.Is(n)
+	n := iou.i()
+	a := iou.is(n)
 
-	iou.Pl(a)
+	iou.pl()
 }
 
 func Max(a, b int) int {
@@ -29,111 +29,111 @@ func Min(a, b int) int {
 	}
 	return a
 }
-type IOUtil struct {
-	Scanner *bufio.Scanner
-	Reader *bufio.Reader
-	Writer *bufio.Writer
+type ioUtil struct {
+	scanner *bufio.Scanner
+	reader *bufio.Reader
+	writer *bufio.Writer
 }
-func NewIOUtil() *IOUtil {
-	iou := IOUtil{
-		Scanner: bufio.NewScanner(os.Stdin),
-		Writer: bufio.NewWriter(os.Stdout),
+func newIOUtil() *ioUtil {
+	iou := ioUtil{
+		scanner: bufio.NewScanner(os.Stdin),
+		writer: bufio.NewWriter(os.Stdout),
 	}
-	iou.Scanner.Split(bufio.ScanWords)
-	iou.Scanner.Buffer(make([]byte, 1024), math.MaxInt64)
+	iou.scanner.Split(bufio.ScanWords)
+	iou.scanner.Buffer(make([]byte, 1024), math.MaxInt64)
 	return &iou
 }
-func (*IOUtil) ToInt(s string) int {
+func (*ioUtil) toInt(s string) int {
 	ret, _ := strconv.Atoi(s)
 	return ret
 }
-func (iou *IOUtil) Int() int {
-	iou.Scanner.Scan()
-	return iou.ToInt(iou.Scanner.Text())
+func (iou *ioUtil) int() int {
+	iou.scanner.Scan()
+	return iou.toInt(iou.scanner.Text())
 }
-func (iou *IOUtil) Str() string {
-	iou.Scanner.Scan()
-	return iou.Scanner.Text()
+func (iou *ioUtil) str() string {
+	iou.scanner.Scan()
+	return iou.scanner.Text()
 }
-func (iou *IOUtil) I() int {
-	return iou.Int()
+func (iou *ioUtil) i() int {
+	return iou.int()
 }
-func (iou *IOUtil) S() string {
-	return iou.Str()
+func (iou *ioUtil) s() string {
+	return iou.str()
 }
-func (iou *IOUtil) Ints(n int) []int {
+func (iou *ioUtil) ints(n int) []int {
 	ret := make([]int, n)
 	for i:=0; i<n; i++ {
-		ret[i] = iou.Int()
+		ret[i] = iou.int()
 	}
 	return ret
 }
-func (iou *IOUtil) Is(n int) []int {
-	return iou.Ints(n)
+func (iou *ioUtil) is(n int) []int {
+	return iou.ints(n)
 }
-func (iou *IOUtil) Ints2(n int) (a, b []int) {
+func (iou *ioUtil) ints2(n int) (a, b []int) {
 	a = make([]int, n)
 	b = make([]int, n)
 	for i:=0; i<n; i++ {
-		a[i] = iou.I()
-		b[i] = iou.I()
+		a[i] = iou.int()
+		b[i] = iou.int()
 	}
 	return a, b
 }
-func (iou *IOUtil) Is2(n int) (a, b []int) {
-	return iou.Ints2(n)
+func (iou *ioUtil) is2(n int) (a, b []int) {
+	return iou.ints2(n)
 }
-func (iou *IOUtil) CumulativeSum(n int) (cumulative, ints []int) {
+func (iou *ioUtil) cumulativeSum(n int) (cumulative, ints []int) {
 	cumulative = append(cumulative, 0)
 	for i:=0; i<n; i++ {
-		ai := iou.Int()
+		ai := iou.int()
 		cumulative = append(cumulative, cumulative[i] + ai)
 		ints = append(ints, ai)
 	}
 	return
 }
-func (iou *IOUtil) Cms(n int) (cumulative, ints []int) {
-	return iou.CumulativeSum(n)
+func (iou *ioUtil) cms(n int) (cumulative, ints []int) {
+	return iou.cumulativeSum(n)
 }
-func (iou *IOUtil) Print(a ...interface{}) {
-	fmt.Fprint(iou.Writer, a...)
+func (iou *ioUtil) print(a ...interface{}) {
+	fmt.Fprint(iou.writer, a...)
 }
-func (iou *IOUtil) P(a ...interface{}) {
-	iou.Print(a...)
+func (iou *ioUtil) p(a ...interface{}) {
+	iou.print(a...)
 }
-func (iou *IOUtil) Println(a ...interface{}) {
-	fmt.Fprintln(iou.Writer, a...)
+func (iou *ioUtil) println(a ...interface{}) {
+	fmt.Fprintln(iou.writer, a...)
 }
-func (iou *IOUtil) Pl(a ...interface{}) {
-	iou.Println(a...)
+func (iou *ioUtil) pl(a ...interface{}) {
+	iou.println(a...)
 }
-func (iou *IOUtil) PrintIntSlice(s []int) {
+func (iou *ioUtil) printIntSlice(s []int) {
 	for _, v := range s {
-		fmt.Fprint(iou.Writer, v)
+		fmt.Fprint(iou.writer, v)
 	}
-	fmt.Fprintln(iou.Writer)
+	fmt.Fprintln(iou.writer)
 }
-func (iou *IOUtil) Pis(s []int) {
-	iou.PrintIntSlice(s)
+func (iou *ioUtil) pis(s []int) {
+	iou.printIntSlice(s)
 }
-func (iou *IOUtil) PrintIntSliceSpace(s []int) {
+func (iou *ioUtil) printIntSliceSpace(s []int) {
 	last := len(s) - 1
 	for i, v := range s {
-		fmt.Fprint(iou.Writer, v)
+		fmt.Fprint(iou.writer, v)
 		if i == last {
-			fmt.Fprintln(iou.Writer)
+			fmt.Fprintln(iou.writer)
 		} else {
-			fmt.Fprint(iou.Writer, " ")
+			fmt.Fprint(iou.writer, " ")
 		}
 	}
 }
-func (iou *IOUtil) Piss(s []int) {
-	iou.PrintIntSliceSpace(s)
+func (iou *ioUtil) piss(s []int) {
+	iou.printIntSliceSpace(s)
 }
-func (iou *IOUtil) Flush() {
-	iou.Writer.Flush()
+func (iou *ioUtil) flush() {
+	iou.writer.Flush()
 }
-func (iou *IOUtil) Fl() {
-	iou.Flush()
+func (iou *ioUtil) fl() {
+	iou.flush()
 }
-var iou = NewIOUtil()
+var iou = newIOUtil()
