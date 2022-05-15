@@ -11,9 +11,24 @@ import(
 func main() {
 	defer iou.Fl()
 
-	w := iou.I()
+	_ = iou.I()
 
-	iou.Pl()
+	a := make([]int, 0)
+
+	for i:=1; i<100; i++ {
+		a = append(a, i)
+	}
+
+	for i:=100; i<10000; i += 100 {
+		a = append(a, i)
+	}
+
+	for i:=10000; i<1000000; i += 10000 {
+		a = append(a, i)
+	}
+
+	iou.Pl(len(a))
+	iou.Piss(a)
 }
 
 func Max(a, b int) int {

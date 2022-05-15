@@ -14,7 +14,19 @@ func main() {
 	n := iou.I()
 	a := iou.Is(n)
 
-	iou.Pl(a)
+	dp1off := make([][2]int, n)
+	dp1off[0][1] = 100000000000
+	dp1on := make([][2]int, n)
+	dp1on[0][0] = 100000000000
+	dp1on[0][1] = a[0]
+	for i:=1; i<n; i++ {
+		dp1off[i][0] = dp1off[i-1][1]
+		dp1off[i][1] = a[i] + Min(dp1off[i-1][0], dp1off[i-1][1])
+		dp1on[i][0] = dp1on[i-1][1]
+		dp1on[i][1] = a[i] + Min(dp1on[i-1][0], dp1on[i-1][1])
+	}
+
+	iou.Pl(Min(dp1off[n-1][1], Min(dp1on[n-1][0], dp1on[n-1][1])))
 }
 
 func Max(a, b int) int {
