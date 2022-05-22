@@ -12,29 +12,53 @@ func main() {
 	defer iou.fl()
 
 	n := iou.i()
-	var a, b, c []int
-	for i:=0; i<n; i++ {
-		a = append(a, iou.i())
-		b = append(b, iou.i())
-		c = append(c, iou.i())
+	m := iou.i()
+	r := make(map[int][][3]int)
+	for i:=1; i<=m; i++ {
+		a := iou.i()
+		b := iou.i()
+		c := iou.i()
+		r[a] = append(r[a], [3]int{b, c, i})
+		r[b] = append(r[b], [3]int{a, c, i})
 	}
 
-	iou.pl()
+	q := NewHeap(ASCENDING)
+	q.Add(node{1, 0, 0})
+	b := make([]bool, n+1)
+
+	ans := make([]int, 0)
+	for q.Next() {
+		ni := q.Pop().(node)
+		if b[ni.n] {
+			continue
+		}
+		b[ni.n] = true
+		if ni.r != 0 {
+			ans = append(ans, ni.r)
+		}
+		if len(ans) == n-1 {
+			break
+		}
+		for _, v := range r[ni.n] {
+			q.Add(node{v[0], ni.d + v[1], v[2]})
+		}
+	}
+
+	iou.piss(ans)
 }
 
-
 type node struct {
-        a int
+        n, d, r int
 }
 
 func (n node) Less(a *HeapNode) bool {
         v := (*a).(node)
-        return n.a < v.a
+        return n.d < v.d
 }
 
 func (n node) Greater(a *HeapNode) bool {
         v := (*a).(node)
-        return n.a > v.a
+        return n.d > v.d
 }
 
 type HeapNode interface {
