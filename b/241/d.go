@@ -11,356 +11,134 @@ import(
 func main() {
 	defer iou.Fl()
 
-	t := NewAvl()
 	q := iou.I()
-	m := make(map[int]int)
+	var s, x, k, a []int
 	for i:=0; i<q; i++ {
 		qi := iou.S()
+		s = append(s, qi)
+
 		if qi == "1" {
-			x := iou.I()
-			if t.Add(x) {
-				m[x] = 1
-			} else {
-				m[x]++
-			}
+			xi = iou.I()
+			a = append(a, xi)
+			x = append(x, xi)
+			k = append(k, 0)
 		} else if qi == "2" {
-			x := iou.I()
-			k := iou.I()
-			n, route := t.FindSmaller(x)
-				iou.Pl(-1)
+			x = append(x, iou.I())
+			k = append(k, iou.I())
 		} else {
-			x := iou.I()
-			k := iou.I()
-			n, route := t.FindBigger(x)
+			x = append(x, iou.I())
+			k = append(k, iou.I())
 		}
+
+	}
+
+	w := NewWaveletMatrix(a)
+
+	for i:=0; i<q; i++ {
+		si, xi, ki := s[i], x[i], k[i]
 	}
 }
 
-type Avl struct {
-	root *Node
+type node struct {
+        a int
 }
 
-func NewAvl () *Avl {
-	return &Avl{}
+func (n node) Less(a *HeapNode) bool {
+        v := (*a).(node)
+        return n.a < v.a
 }
 
-type Node struct {
-	value int
-	height int
-	right *Node
-	left *Node
+func (n node) Greater(a *HeapNode) bool {
+        v := (*a).(node)
+        return n.a > v.a
 }
 
-func NewNode(value int) *Node {
-	return &Node{
-		value: value,
-		height: 1,
-	}
+// Node is the interface a node of Heap.
+// Less returns Node is less than a or not.
+// Greater returns Node is greater than a or not.
+type HeapNode interface {
+	Less(a *HeapNode) bool
+	Greater(a *HeapNode) bool
 }
 
-func (n *Node) Value() int {
-	return n.value
+// Heap is the binary heap structure.
+// To use it, the Node interface must be implemented.
+// Its indexes are 0-origin.
+// It can use ascending or descending order.
+// TODO It may need to be refactored, expecially Pop().
+// TODO It may need to be devided into min heap and max heap. Then remove isChild, use Less or Greater
+type Heap struct {
+	n []*HeapNode
+	isChild func(parent, child int) bool
 }
 
-func (n *Node) Height() int {
-	if n != nil {
-		return n.height
-	}
-	return 0
-}
+const(
+	ASCENDING = true
+	DESCENDING = false
+)
 
-func (n *Node) getBalance() int {
-	return n.right.Height() - n.left.Height()
-}
-
-func (n *Node) updateHeight() int {
-	left := n.left.Height() + 1
-	right := n.right.Height() + 1
-	if left > right {
-		n.height = left
+func NewHeap(ascending bool) *Heap {
+	h := &Heap{make([]*HeapNode, 0), nil}
+	if ascending {
+		h.isChild = func(parent, child int) bool { return (*h.n[parent]).Less(h.n[child]) }
 	} else {
-		n.height = right
+		h.isChild = func(parent, child int) bool { return (*h.n[parent]).Greater(h.n[child]) }
 	}
-	return n.height
+	return h
 }
 
-func (t *Avl) FindBigger(value int) (n *Node, route []*Node) {
-	n = t.root
-	for n != nil {
-		route = append(route, n)
-		if value == n.value {
-			return n, route
-		} else if value > n.value {
-			return n, route
+func parent(i int) int {
+	return (i - 1) / 2
+}
+
+func left(i int) int {
+	return i * 2 + 1
+}
+
+func right(i int) int {
+	return (i + 1) * 2
+}
+
+func (h *Heap) Add(value HeapNode) {
+	h.n = append(h.n, &value)
+	i := len(h.n) - 1
+	for i != 0 {
+		p := parent(i)
+		if h.isChild(p, i) {
+			break
+		}
+		h.n[p], h.n[i] = h.n[i], h.n[p]
+		i =p
+	}
+}
+
+func (h *Heap) Top() *HeapNode {
+	return h.n[0]
+}
+
+func (h *Heap) Pop() HeapNode {
+	ret := h.n[0]
+	last := len(h.n)-1
+	h.n[0] = h.n[last]
+	h.n = h.n[:last]
+	i := 0
+	for last > left(i) {
+		c, r := left(i), right(i)
+		if len(h.n) > r && h.isChild(r, c) {
+			c = r
+		}
+		if h.isChild(i, c) {
+			break
 		} else {
-			n = n.left
+			h.n[i], h.n[c] = h.n[c], h.n[i]
+			i = c
 		}
 	}
-	return nil, route
+	return *ret
 }
 
-func (t *Avl) FindSmaller(value int) (n *Node, route []*Node) {
-	n = t.root
-	for n != nil {
-		route = append(route, n)
-		if value == n.value {
-		} else if value > n.value {
-			n = n.right
-		} else {
-			return n, route
-		}
-	}
-	return nil, route
-}
-
-func (t *Avl) Find(value int) (n *Node, route []*Node) {
-	n = t.root
-	for n != nil {
-		route = append(route, n)
-		if value == n.value {
-			return n, route
-		} else if value > n.value {
-			n = n.right
-		} else {
-			n = n.left
-		}
-	}
-	return nil, route
-}
-
-func (t *Avl) Add(value int) bool {
-	if t.root == nil {
-		t.root = NewNode(value)
-		return true
-	}
-	_, route := t.Find(value)
-	parent := route[len(route)-1]
-	if parent.value == value {
-		return false
-	}
-	nn := NewNode(value)
-	if value > parent.value {
-		parent.right = nn
-	} else {
-		parent.left = nn
-	}
-	t.balance(route, true)
-	return true
-}
-
-func (t *Avl) Remove(value int) bool {
-	if t.root == nil {
-		return false
-	}
-	n, route := t.Find(value)
-	if n == nil {
-		return false
-	}
-	parent := t.getParentFromRoute(route)
-	if n.left == nil && n.right == nil {
-		t.removeNodeHasNoChild(n, parent)
-		route = route[:len(route)-1]
-	} else if n.right == nil {
-		t.removeNodeHasChild(n, parent, n.left)
-		route = route[:len(route)-1]
-	} else if n.left == nil {
-		t.removeNodeHasChild(n, parent, n.right)
-		route = route[:len(route)-1]
-	} else {
-		additionalRoute := t.removeNodeHasChildren(n)
-		for i:=0; i<len(additionalRoute)-1; i++ {
-			route = append(route, additionalRoute[i])
-		}
-	}
-	t.balance(route, false)
-	return true
-}
-
-func (*Avl) getParentFromRoute(route []*Node) *Node {
-	if len(route) > 1 {
-		return route[len(route)-2]
-	}
-	return nil
-}
-
-func (t *Avl) removeNodeHasChildren(n *Node) []*Node {
-	leftMax, route := t.Max(n.left)
-	leftMaxParent := n
-	if leftMax != n.left {
-		leftMaxParent = t.getParentFromRoute(route)
-	}
-	n.value = leftMax.value
-	if leftMax.left == nil {
-		t.removeNodeHasNoChild(leftMax, leftMaxParent)
-	} else {
-		t.removeNodeHasChild(leftMax, leftMaxParent, leftMax.left)
-	}
-	return route
-}
-
-func (t *Avl) removeNodeHasChild(n, parent, child *Node) {
-	t.replaceNode(n, parent, child)
-	child = nil
-}
-
-func (t *Avl) removeNodeHasNoChild(n, parent *Node) {
-	t.replaceNode(n, parent, nil)
-}
-
-func (t *Avl) replaceNode(n, parent, newNode *Node) {
-	if parent != nil {
-		if parent.left == n {
-			parent.left = newNode
-		} else {
-			parent.right = newNode
-		}
-	}
-	if n == t.root {
-		t.root = newNode
-	}
-}
-
-func (t *Avl) Max(n *Node) (max *Node, route []*Node) {
-	if t.root == nil {
-		return nil, nil
-	}
-	if n == nil {
-		n = t.root
-	}
-	route = append(route, n)
-	for n.right != nil {
-		n = n.right
-		route = append(route, n)
-	}
-	return n, route
-}
-
-func (t *Avl) Min(n *Node) (min *Node, route []*Node) {
-	if t.root == nil {
-		return nil, nil
-	}
-	if n == nil {
-		n = t.root
-	}
-	route = append(route, n)
-	for n.left != nil {
-		n = n.left
-		route = append(route, n)
-	}
-	return n, route
-}
-
-func (t *Avl) Echo() {
-	if t.root == nil {
-		fmt.Println("nil")
-		return
-	}
-	t.echo(t.root, "")
-}
-
-func (t *Avl) echo(n *Node, space string) {
-	space += "    "
-	if n.right != nil {
-		t.echo(n.right, space)
-	}
-	fmt.Println(space, n.value)
-	if n.left != nil {
-		t.echo(n.left, space)
-	}
-}
-
-func (t *Avl) balance(route []*Node, isAdd bool) {
-	for i:=len(route)-1; i>=0; i-- {
-		n := route[i]
-		var parent *Node
-		if i != 0 {
-			parent = route[i-1]
-		}
-		n.updateHeight()
-		switch n.getBalance() {
-		case -1:
-			if !isAdd { return }
-		case -2:
-			if n.left.getBalance() > 0 {
-				t.rotateLR(n, parent, n.left)
-			} else {
-				t.rotateR(n, parent, n.left)
-			}
-			if isAdd { return }
-		case 0:
-			if isAdd { return }
-		case 1:
-			if !isAdd { return }
-		case 2:
-			if n.right.getBalance() < 0 {
-				t.rotateRL(n, parent, n.right)
-			} else {
-				t.rotateL(n, parent, n.right)
-			}
-			if isAdd { return }
-		}
-	}
-}
-
-func (t *Avl) setPivotAsParentsChild(n, parent, pivot *Node) {
-	if parent == nil {
-		t.root = pivot
-		return
-	}
-	if parent.right == n {
-		parent.right = pivot
-	} else {
-		parent.left = pivot
-	}
-}
-
-func (t *Avl) rotateL(n, parent, pivot *Node) {
-	n.right = pivot.left
-	pivot.left = n
-	n.updateHeight()
-	pivot.updateHeight()
-	t.setPivotAsParentsChild(n, parent, pivot)
-}
-
-func (t *Avl) rotateR(n, parent, pivot *Node) {
-	n.left = pivot.right
-	pivot.right = n
-	n.updateHeight()
-	pivot.updateHeight()
-	t.setPivotAsParentsChild(n, parent, pivot)
-}
-
-func (t *Avl) rotateLR(n, parent, pivot *Node) {
-	t.rotateL(pivot, n, pivot.right)
-	t.rotateR(n, parent, n.left)
-}
-
-func (t *Avl) rotateRL(n, parent, pivot *Node) {
-	t.rotateR(pivot, n, pivot.left)
-	t.rotateL(n, parent, n.right)
-}
-
-func (t *Avl) Repl() {
-	for {
-		s := ""
-		n := 0
-		fmt.Scan(&s)
-		switch s {
-		case "a":
-			fmt.Scan(&n)
-			t.Add(n)
-			t.Echo()
-		case "r":
-			fmt.Scan(&n)
-			t.Remove(n)
-			t.Echo()
-		case "f":
-			fmt.Scan(&n)
-			fmt.Println(t.Find(n))
-		case "p":
-			t.Echo()
-		}
-	}
+func (h *Heap) Next() bool {
+	return len(h.n) != 0
 }
 
 func Max(a, b int) int {
