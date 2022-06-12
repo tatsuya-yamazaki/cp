@@ -15,9 +15,37 @@ func main() {
 	m := iou.i()
 	s := iou.is(n-1)
 	x := iou.is(m)
+
+	b := make([]int, n)
+	for i:=1; i<n; i++ {
+		b[i] = s[i-1] - b[i-1]
+	}
+
+	zm := make(map[int]int)
+
+	for i:=0; i<n; i++ {
+		for j:=0; j<m; j++ {
+			zm[getZ(x,b,i,j)]++
+		}
+	}
+
 	ans := 0
+	for _, v := range zm {
+		ans = Max(ans,v)
+	}
 
 	iou.pl(ans)
+}
+
+func getZ(x, b []int, i, j int) int {
+	return getSign(i) * (x[j] - b[i])
+}
+
+func getSign(i int) int {
+	if i % 2 == 0 {
+		return 1
+	}
+	return -1
 }
 
 func Max(a, b int) int {
