@@ -17,6 +17,19 @@ func main() {
 	iou.pl()
 }
 
+func Pow(x, n int) int {
+	ret := 1
+	for i:=0; i<n; i++ {
+		ret *= x
+	}
+	return ret
+}
+func Abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
 func Max(a, b int) int {
 	if a < b {
 		return b
