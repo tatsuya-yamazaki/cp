@@ -16,11 +16,73 @@ func main() {
 	x := iou.i()
 	w := iou.is(n)
 
-	for i:=0; i<q; i++ {
-		k := iou.i()
-		iou.pl()
+	ws := 0
+	for _, v := range w {
+		ws += v
 	}
 
+	for i:=0; i<n; i++ {
+		w = append(w, w[i])
+	}
+
+	b := make([]int, n)
+
+	loop := x / ws
+	rest := x % ws
+	l := 0
+	sum := 0
+	num := 0
+	for r:=0; r<2*n; r++ {
+		sum += w[r]
+		num++
+		if sum < rest {
+			continue
+		}
+		for sum >= rest && l <= r && l < n {
+			b[l] = num
+			sum -= w[l]
+			num--
+			l++
+		}
+	}
+
+	visited := make([]bool, n)
+	lb := make([]int, 0)
+	pos := 0
+	for {
+		if visited[pos] {
+			break
+		}
+		lb = append(lb, pos)
+		visited[pos] = true
+		pos = (pos + b[pos]) % n
+	}
+
+	var s int // loop start box index
+	for i, v := range lb {
+		if v == pos {
+			s = i
+			break
+		}
+	}
+	ll := len(lb) - s // loop length
+
+	for i:=0; i<q; i++ {
+		k := iou.i()
+		k--
+
+		if rest == 0 {
+			iou.pl(loop * n)
+			continue
+		}
+
+		if k < s {
+			iou.pl(loop * n + b[lb[k]])
+			continue
+		}
+		k -= s
+		iou.pl(loop * n + b[lb[s + k % ll]])
+	}
 }
 
 func Pow(x, n int) int {
