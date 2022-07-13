@@ -6,7 +6,6 @@ import(
 	"math"
 	"os"
 	"strconv"
-	"sort"
 )
 
 func main() {
@@ -14,42 +13,27 @@ func main() {
 
 	n := iou.i()
 
-	ns := make([]node, n*2)
+	s := make([]int, 200001)
 	for i:=0; i<n; i++ {
 		l := iou.i()
 		r := iou.i()
-		ns[i*2] = node{l, true}
-		ns[i*2+1] = node{r, false}
+		s[l]++
+		s[r]--
 	}
 
-	sort.Slice(ns, func(i, j int) bool { return ns[i].b && !ns[j].b })
-	sort.SliceStable(ns, func(i, j int) bool { return ns[i].p < ns[j].p })
+	for i:=1; i<len(s); i++ {
+		s[i] += s[i-1]
+	}
 
-	num := 0 // num of interval
-	ans := make([]int, 0)
-	for _, v := range ns {
-		if v.b {
-			num++
-			if num == 1 {
-				ans = append(ans, v.p)
-			}
-		} else {
-			num--
-			if num == 0 {
-				ans = append(ans, v.p)
-			}
+	for i:=1; i<len(s); i++ {
+		if s[i-1] == 0 && s[i] != 0 {
+			iou.p(i, " ")
+		}
+		if s[i-1] != 0 && s[i] == 0 {
+			iou.pl(i)
 		}
 	}
 
-	for i:=0; i<len(ans)/2; i++ {
-		iou.p(ans[i*2], " ", ans[i*2+1])
-		iou.pl()
-	}
-}
-
-type node struct {
-	p int
-	b bool
 }
 
 func Pow(x, n int) int {
