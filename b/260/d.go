@@ -20,10 +20,10 @@ func main() {
 		e[i] = -1
 	}
 
-	m := make(map[int][]int)
+	m := make(map[int][]int) // k: 山の一番上、v:山の配列
 
 	for _, v := range p {
-		s, ok := m[]
+		s, ok := m[]// k: 山の一番上、v:山の配列
 	}
 
 	for _, v := range e {
