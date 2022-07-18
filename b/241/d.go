@@ -6,7 +6,6 @@ import(
 	"math"
 	"os"
 	"strconv"
-	"sort"
 )
 
 func main() {
@@ -33,8 +32,7 @@ func main() {
 
 	}
 
-	// tleになる原因として、大きいのはNewとRangefreq
-	// 特にNewはそれだけで1800ms以上かかっている。sortが重い？それともbitシフト？
+	// tleになる原因として、大きいのはRangefreq
 	// Rangefreqについては、予想通り重いみたい。本を読む。もしくはc++実装を見る
 	// 逆にQuantileは一瞬のようだ
 	w := NewWaveletMatrix(a)
@@ -458,59 +456,6 @@ type WaveletMatrix struct {
 	firstIndexes map[int]int
 }
 
-// NewWaveletMatrix returns pointer of WaveletMatrix.
-func NewWaveletMatrix(t []int) *WaveletMatrix {
-	if len(t) == 0 {
-		return nil
-	}
-	max := 0
-	for i, v := range t {
-		if t[max] < v {
-			max = i
-		}
-	}
-	topBit := 0
-	for i:=0; i<64; i++ {
-		if t[max] & (1<<i) > 0 {
-			topBit = i
-		}
-	}
-
-	length := topBit + 1
-	w := &WaveletMatrix{make([]*SuccinctDictionary, length), make([]int, length), make(map[int]int)}
-
-	type sortInt struct {
-		v, b int // v is value, b is bit
-	}
-	sis := make([]sortInt, len(t))
-	for i:=0; i<len(t); i++ {
-		sis[i].v = t[i]
-	}
-
-	for i:=topBit; i>=0; i-- {
-		b := NewSuccinctDictionary(len(sis))
-		for j, v := range sis {
-			if v.v & (1<<i) > 0 {
-				b.Set(j, true)
-				sis[j].b = 1
-			} else {
-				sis[j].b = 0
-			}
-		}
-		b.Build()
-		w.bitVectors[i] = b
-		w.zeroNums[i] = b.Rank0(b.Size())
-		sort.SliceStable(sis, func(k, l int) bool {return sis[k].b < sis[l].b})
-	}
-	for i:=0; i<len(sis); i++ {
-		_, ok := w.firstIndexes[sis[i].v]
-		if !ok {
-			w.firstIndexes[sis[i].v] = i
-		}
-	}
-	return w
-}
-
 // Access returns original slice item value.
 // index is 0-indexed.
 func (w WaveletMatrix) Access(index int) int {
@@ -830,3 +775,68 @@ type queueLinkedList struct {
         next *queueLinkedList
 	value QueueValue
 }
+
+// NewWaveletMatrix returns pointer of WaveletMatrix.
+func NewWaveletMatrix(t []int) *WaveletMatrix {
+	if len(t) == 0 {
+		return nil
+	}
+	max := 0
+	for i, v := range t {
+		if t[max] < v {
+			max = i
+		}
+	}
+	topBit := 0
+	for i:=0; i<64; i++ {
+		if t[max] & (1<<i) > 0 {
+			topBit = i
+		}
+	}
+
+	length := topBit + 1
+	w := &WaveletMatrix{make([]*SuccinctDictionary, length), make([]int, length), make(map[int]int)}
+
+	s0 := make([]int, len(t)) // numbers of previous bit 0
+	s1 := make([]int, 0) // numbers of previous bit 1
+	copy(s0, t)
+
+	setNext := func(n0, n1, s []int, bit, start int, sd *SuccinctDictionary) ([]int, []int) {
+		for i, v := range s {
+			if v & (1<<bit) > 0 {
+				n1 = append(n1, v)
+				sd.Set(start + i, true)
+			} else {
+				n0 = append(n0, v)
+			}
+		}
+		return n0, n1
+	}
+
+	for i:=topBit; i>=0; i-- {
+		var n0, n1 []int // next numbers of previous bit 0 and 1
+		sd := NewSuccinctDictionary(len(t))
+		n0, n1 = setNext(n0, n1, s0, i, 0, sd)
+		n0, n1 = setNext(n0, n1, s1, i, len(s0), sd)
+		s0 = n0
+		s1 = n1
+		sd.Build()
+		w.bitVectors[i] = sd
+		w.zeroNums[i] = sd.Rank0(sd.Size())
+	}
+
+	s := s0
+	start := 0
+	for i:=0; i<len(t); i++ {
+		if i == len(s0) {
+			s = s1
+			start -= len(s0)
+		}
+		_, ok := w.firstIndexes[s[start + i]]
+		if !ok {
+			w.firstIndexes[s[start + i]] = i
+		}
+	}
+	return w
+}
+
