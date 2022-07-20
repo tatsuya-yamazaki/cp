@@ -25,30 +25,10 @@ func main() {
 	done := make([]bool, n+1)
 	parent := make([]int, n+1)
 	depth := make([]int, n+1)
-	ln := 1
 	pq := NewHeap(DESCENDING)
-	q := NewQueue()
-	q.Add(s{1, 0})
+	ln := 1
 	ans := make([][2]int, n+1)
-	for q.Next() {
-		node := q.Pop().(s)
-		depth[node.i] = node.d
-		if node.i != 1 && len(dest[node.i]) == 1 {
-			pq.Add(hn{node.i, node.d})
-			ans[node.i][0] = ln
-			ans[node.i][1] = ln
-			done[node.i] = true
-			ln++
-			continue
-		}
-		for _, v := range dest[node.i] {
-			if parent[node.i] == v {
-				continue
-			}
-			parent[v] = node.i
-			q.Add(s{v, node.d+1})
-		}
-	}
+	f(pq, dest, parent, depth, done, ans , 1, 0, &ln)
 
 	for pq.Next() {
 		i := pq.Pop().(hn).i
@@ -59,9 +39,6 @@ func main() {
 		} else {
 			ans[p][0] = Min(ans[p][0], ans[i][0])
 			ans[p][1] = Max(ans[p][1], ans[i][1])
-		}
-		if parent[i] == 0 {
-			break
 		}
 		if !done[p] {
 			done[p] = true
@@ -74,6 +51,25 @@ func main() {
 			continue
 		}
 		iou.Pl(v[0], " " , v[1])
+	}
+}
+
+func f(h *Heap, dest map[int][]int, parent, depth []int, done []bool, ans [][2]int, i, d int, ln *int) {
+	depth[i] = d
+	if i != 1 && len(dest[i]) == 1 {
+		h.Add(hn{i, d})
+		ans[i][0] = *ln
+		ans[i][1] = *ln
+		*ln++
+		done[i] = true
+		return
+	}
+	for _, v := range dest[i] {
+		if parent[i] == v {
+			continue
+		}
+		parent[v] = i
+		f(h, dest, parent, depth, done, ans, v, d+1, ln)
 	}
 }
 
