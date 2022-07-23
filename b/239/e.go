@@ -6,15 +6,47 @@ import(
 	"math"
 	"os"
 	"strconv"
+	"sort"
 )
 
 func main() {
 	defer iou.Fl()
 
 	n := iou.I()
-	a := iou.Is(n)
+	q := iou.I()
+	x := iou.Is(n)
+	a, b := iou.Is2(n-1)
 
-	iou.Pl(a)
+	m := make(map[int][]int)
+	for i:=0; i<n-1; i++ {
+		ai, bi := a[i], b[i]
+		m[ai] = append(m[ai], bi)
+		m[bi] = append(m[bi], ai)
+	}
+	c := make(map[int][]int)
+	p := make([]int, n+1)
+	f(1, x, p, m, c)
+
+	for i:=0; i<q; i++ {
+		v, k := iou.I(), iou.I()
+		iou.Pl(c[v][k-1])
+	}
+}
+
+func f(i int, x, p []int, m, c map[int][]int) (ret []int) {
+	for _, v := range m[i] {
+		if p[i] == v {
+			continue
+		}
+		p[v] = i
+		ret = append(ret, f(v, x, p, m, c)...)
+	}
+	ret = append(ret, x[i-1])
+	sort.Sort(sort.Reverse(sort.IntSlice(ret)))
+	max := Min(20, len(ret))
+	ret = ret[:max]
+	c[i] = ret
+	return ret
 }
 
 func Max(a, b int) int {
