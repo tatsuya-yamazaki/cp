@@ -12,9 +12,46 @@ func main() {
 	defer iou.fl()
 
 	n := iou.i()
+	l := iou.i()
+	k := iou.i()
 	a := iou.is(n)
 
-	iou.pl()
+	iou.pl(ans(a, l, k))
+}
+
+func f(a []int, l, k, score int) bool {
+	piece := 0
+	kc := 0
+	prev := 0
+	for i:=0; i<len(a); i++ {
+		piece += a[i] - prev
+		if piece >= score {
+			piece = 0
+			kc++
+		}
+		prev = a[i]
+		if kc == k {
+			break
+		}
+	}
+	piece += l - prev
+	if kc < k || piece < score {
+		return false
+	}
+	return true
+}
+
+func ans(a []int, l, k int) int {
+	ok, ng := 0, l + 1
+	for ok < ng - 1 {
+		m := (ok + ng) / 2
+		if f(a, l, k, m) {
+			ok = m
+		} else {
+			ng = m
+		}
+	}
+	return ok
 }
 
 func Pow(x, n int) int {

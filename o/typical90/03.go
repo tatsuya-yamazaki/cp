@@ -11,10 +11,21 @@ import(
 func main() {
 	defer iou.fl()
 
-	n := iou.i()
-	a := iou.is(n)
+	//n := iou.i()
+	//a := iou.is(n)
 
-	iou.pl()
+	s := make([]int, 10)
+	for i:=0; i<len(s); i++ {
+		s[i] = i
+	}
+
+	s2 := s[1:3]
+	iou.pl(s)
+	iou.pl(s2)
+	s2 = append(s2, 13)
+
+	iou.pl(s)
+	iou.pl(s2)
 }
 
 func Pow(x, n int) int {

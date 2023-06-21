@@ -6,15 +6,65 @@ import(
 	"math"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
 	defer iou.fl()
 
 	n := iou.i()
-	a := iou.is(n)
+	if n % 2 > 0 {
+		return
+	}
+	s := []rune(strings.Repeat("(", n/2) + strings.Repeat(")", n/2))
 
-	iou.pl()
+	for {
+		if isValid(s) {
+			iou.pl(string(s))
+		}
+		if NextPermutation(s) {
+			break
+		}
+	}
+}
+
+func isValid(s []rune) bool {
+	left := '('
+	lc, rc := 0, 0
+	for _, v := range s {
+		if v == left {
+			lc++
+		} else {
+			rc++
+		}
+		if lc < rc {
+			return false
+		}
+	}
+	return true
+}
+
+func NextPermutation(s []rune) bool {
+	l, b := -1, -1
+	for i := 0; i < len(s)-1; i++ {
+		if s[i] < s[i+1] {
+			l = i
+		}
+	}
+	if l == -1 {
+		return true
+	}
+	for i := len(s) - 1; i >= 0; i-- {
+		if s[l] < s[i] {
+			b = i
+			break
+		}
+	}
+	s[l], s[b] = s[b], s[l]
+	for i := 1; i <= (len(s)-1-l)/2; i++ {
+		s[l+i], s[len(s)-i] = s[len(s)-i], s[l+i]
+	}
+	return false
 }
 
 func Pow(x, n int) int {
