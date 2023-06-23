@@ -6,16 +6,40 @@ import(
 	"math"
 	"os"
 	"strconv"
-	"strings"
 )
 
 func main() {
 	defer iou.fl()
 
 	n := iou.i()
-	a := iou.is(n)
+	a, b := iou.is2(n-1)
+	m := make(map[int][]int)
+	for i:=0; i<n-1; i++ {
+		ai, bi := a[i]-1, b[i]-1
+		m[ai] = append(m[ai], bi)
+		m[bi] = append(m[bi], ai)
+	}
 
-	iou.pl()
+	apex, _ := f(0, -1, 0, m)
+	_, distance := f(apex, -1, 0, m)
+
+	iou.pl(distance+1)
+}
+
+func f(start, prev, passed int, m map[int][]int) (apex, distance int) {
+	apex = start
+	distance = passed
+	for _, v := range m[start] {
+		if v == prev {
+			continue
+		}
+		ap, di := f(v, start, passed+1, m)
+		if di > distance {
+			apex = ap
+			distance = di
+		}
+	}
+	return
 }
 
 func Pow(x, n int) int {

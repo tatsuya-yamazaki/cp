@@ -11,34 +11,100 @@ import(
 func main() {
 	defer iou.fl()
 
-	h := iou.i()
-	w := iou.i()
-	g := make([][]int, h)
-	for i:=0; i<h; i++ {
-		r := make([]int, w)
-		for j:=0; j<w; j++ {
-			r[j] = iou.i()
-		}
-		g[i] = r
+	n := iou.i()
+	a, b := iou.is2(n-1)
+	m := make(map[int][]int)
+	for i:=0; i<n-1; i++ {
+		ai, bi := a[i]-1, b[i]-1
+		m[ai] = append(m[ai], bi)
+		m[bi] = append(m[bi], ai)
 	}
 
-	rows := make([]int, h)
-	columns := make([]int, w)
+	apex, _ := f(0, n, m)
+	_, distance := f(apex, n, m)
 
-	for i:=0; i<h; i++ {
-		for j:=0; j<w; j++ {
-			rows[i] += g[i][j]
-			columns[j] += g[i][j]
+	iou.pl(distance+1)
+}
+
+type st struct {
+	Apex, Distance int
+}
+
+func f(start, n int, m map[int][]int) (apex, distance int) {
+	ds := make([]int, n)
+	for i:=0; i<n; i++ {
+		ds[i] = -1
+	}
+
+	ds[start] = 0
+	q := NewQueue()
+	q.Add(st{start, 0})
+	for q.Next() {
+		t := q.Pop().(st)
+		for _, v := range m[t.Apex] {
+			if ds[v] != -1 {
+				continue
+			}
+			ds[v] = t.Distance + 1
+			q.Add(st{v, ds[v]})
 		}
 	}
 
-	for i:=0; i<h; i++ {
-		ans := make([]int, w)
-		for j:=0; j<w; j++ {
-			ans[j] = rows[i] + columns[j] - g[i][j]
+	apex = start
+	distance = 0
+	for i:=0; i<n; i++ {
+		if ds[i] > distance {
+			apex = i
+			distance = ds[i]
 		}
-		iou.piss(ans)
 	}
+	return
+}
+
+
+type Queue struct {
+	begin *queueLinkedList
+	end   *queueLinkedList
+}
+
+func NewQueue() *Queue {
+	return &Queue{}
+}
+
+func (q *Queue) Next() bool {
+	if q.begin == nil {
+		return false
+	}
+	return true
+}
+
+func (q *Queue) Add(value QueueValue) {
+	ll := &queueLinkedList{nil, value}
+	if q.end == nil {
+		q.begin = ll
+	} else {
+		q.end.next = ll
+	}
+	q.end = ll
+}
+
+func (q *Queue) Pop() QueueValue {
+	value := q.begin.value
+	if q.begin == q.end {
+		q.begin = nil
+		q.end = nil
+	} else {
+		q.begin = q.begin.next
+	}
+	return value
+}
+
+type QueueValue interface {
+}
+
+type queueLinkedList struct {
+	next  *queueLinkedList
+	value QueueValue
 }
 
 func Pow(x, n int) int {
